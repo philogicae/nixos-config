@@ -13,7 +13,7 @@
     win-virtio
     win-spice
     adwaita-icon-theme
-    (callPackage /home/philogicae/nixos-config/modules/extra/rustdesk-flutter/package.nix {})
+    #(callPackage /home/philogicae/nixos-config/modules/extra/rustdesk-flutter/package.nix {})
   ];
 
   # Manage the virtualisation services

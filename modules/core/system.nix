@@ -36,6 +36,7 @@
     dysk
     brave
     windsurf
+    rustdesk-flutter
   ];
 
   time.timeZone = "Europe/Bucharest";
