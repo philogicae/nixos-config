@@ -1,28 +1,9 @@
 <h1 align="center">
    <img src="./.github/assets/logo/nixos-logo.png  " width="100px" /> 
    <br>
-      Frost-Phoenix's Flakes 
+      Philogicae's Flakes 
    <br>
       <img src="./.github/assets/pallet/pallet-0.png" width="600px" /> <br>
-
-   <div align="center">
-      <p></p>
-      <div align="center">
-         <a href="https://github.com/Frost-Phoenix/nixos-config/stargazers">
-            <img src="https://img.shields.io/github/stars/Frost-Phoenix/nixos-config?color=FABD2F&labelColor=282828&style=for-the-badge&logo=starship&logoColor=FABD2F">
-         </a>
-         <a href="https://github.com/Frost-Phoenix/nixos-config/">
-            <img src="https://img.shields.io/github/repo-size/Frost-Phoenix/nixos-config?color=B16286&labelColor=282828&style=for-the-badge&logo=github&logoColor=B16286">
-         </a>
-         <a = href="https://nixos.org">
-            <img src="https://img.shields.io/badge/NixOS-unstable-blue.svg?style=for-the-badge&labelColor=282828&logo=NixOS&logoColor=458588&color=458588">
-         </a>
-         <a href="https://github.com/Frost-Phoenix/nixos-config/blob/main/LICENSE">
-            <img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&colorA=282828&colorB=98971A&logo=unlicense&logoColor=98971A&"/>
-         </a>
-      </div>
-      <br>
-   </div>
 </h1>
 
 
@@ -38,29 +19,9 @@
    Screenshots last updated <b>2025-01-05</b>
 </p>
 
-Here is my previous Catppuccin rice. You can find it [here](https://github.com/Frost-Phoenix/nixos-config/tree/catppuccin)
-<details>
-<summary>
-Catppuccin (EXPAND)
-</summary>
-<p align="center">
-   <img src="./.github/assets/screenshots/catppuccin/1.png" style="margin-bottom: 10px;" /> <br>
-   <img src="./.github/assets/screenshots/catppuccin/2.png" style="margin-bottom: 10px;" /> <br>
-   <img src="./.github/assets/screenshots/catppuccin/3.png" style="margin-bottom: 10px;" /> <br>
-</p>  
-   <details>
-   <summary>
-   Old Catppuccin (EXPAND)
-   </summary>
-   <p align="center">
-      <img src="./.github/assets/screenshots/catppuccin/old/1.old.png" style="margin-bottom: 10px;" /> <br>
-      <img src="./.github/assets/screenshots/catppuccin/old/2.old.png" style="margin-bottom: 10px;" /> <br>
-      <img src="./.github/assets/screenshots/catppuccin/old/3.old.png" style="margin-bottom: 10px;" /> <br>
-   </p>
-   </details>
-</details>
-
 # 🗃️ Overview
+
+Fork of [Frost-Phoenix/nixos-config](https://github.com/Frost-Phoenix/nixos-config)
 
 ## 📚 Layout
 
@@ -379,7 +340,7 @@ First install nixos using any [graphical ISO image](https://nixos.org/download.h
 
 ```bash
 nix-shell -p git
-git clone https://github.com/Frost-Phoenix/nixos-config
+git clone https://github.com/philogicae/nixos-config
 cd nixos-config
 ```
 #### 3. **Install script**
@@ -407,8 +368,8 @@ Even though I use home manager, there is still a little bit of manual configurat
 ```nix
 programs.git = {
    ...
-   userName = "Frost-Phoenix";
-   userEmail = "67cyril6767@gmail.com";
+   userName = "...";
+   userEmail = "...";
    ...
 };
 ```
@@ -419,32 +380,41 @@ A brief walkthrough of what the install script does.
 
 #### 1. **Get username**
 
-You will receive a prompt to enter your username, with a confirmation check.
+> [!IMPORTANT]
+> To make sure everything runs correctly, **DO NOT run the script as root**. Execute it as a regular user:
+> ```bash
+> ./install.sh
+> ```
 
-#### 2. **Set username**
+The `install.sh` script performs the following actions:
 
-The script will replace all occurancies of the default usename ```CURRENT_USERNAME``` by the given one stored in ```$username```
+#### 1. **Choose Aseprite Installation**
+You will be prompted to choose whether to install Aseprite. Disabling Aseprite can lead to a faster installation.
+- If you choose not to install Aseprite, the script will comment out its inclusion in `modules/home/aseprite/aseprite.nix`.
 
-#### 3. Create basic directories
+#### 2. **Create Basic Directories**
+The following directories will be created in your home folder:
+- `~/Music`
+- `~/Documents`
+- `~/Pictures/wallpapers/others`
 
-The following directories will be created:
-- ```~/Music```
-- ```~/Documents```
-- ```~/Pictures/wallpapers/others```
+#### 3. **Copy Wallpapers**
+Wallpapers are copied to your Pictures directory:
+- `wallpapers/wallpaper.png` is copied to `~/Pictures/wallpapers/`
+- Files from `wallpapers/otherWallpaper/gruvbox/` are copied to `~/Pictures/wallpapers/others/`
+- Files from `wallpapers/otherWallpaper/nixos/` are copied to `~/Pictures/wallpapers/others/`
 
-#### 4. Copy the wallpapers
+These are used by scripts like `wallpaper-picker.sh`.
 
-Then the wallpapers will be copied into ```~/Pictures/wallpapers/others``` which is the folder in which the ```wallpaper-picker.sh``` script will be looking for them.
+#### 4. **Copy Hardware Configuration**
+The script copies your system's current hardware configuration from `/etc/nixos/hardware-configuration.nix` to `./hosts/vm/hardware-configuration.nix`. This ensures the NixOS build uses your specific hardware details for the `vm` host configuration.
 
-#### 5. Get the hardware configuration
-
-It will also automatically copy the hardware configuration from ```/etc/nixos/hardware-configuration.nix``` to ```./hosts/${host}/hardware-configuration.nix``` so that the hardware configuration used is yours and not the default one.
-
-#### 6. Choose a host (desktop / laptop)
-
-Now you will need to choose the host you want. It depend on whether you are using a desktop or laptop (or a VM altho it can be really buggy).
-
-#### 7. Choose whether to install aseprite or not
+#### 5. **Build and Apply Configuration**
+Finally, the script builds the NixOS configuration for the `vm` host and applies it to your system using the following command:
+```bash
+sudo nixos-rebuild switch --flake .#vm --impure
+```
+This will configure your system according to this flake.
 
 To reduce installation time, you can choose to skip installing Aseprite. The installation process for Aseprite is time-intensive as it requires compiling over 1100 C++ files from source.
 
@@ -472,13 +442,7 @@ Other dotfiles that I learned / copy from:
   - [Ruixi-rebirth/flakes](https://github.com/Ruixi-rebirth/flakes)
 
 
-<!-- # ✨ Stars History -->
-
-<!-- <p align="center"><img src="https://api.star-history.com/svg?repos=frost-phoenix/nixos-config&type=Timeline&theme=dark" /></p> -->
-
 <p align="center"><img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" /></p>
-
-<!-- end of page, send back to the top -->
 
 <div align="right">
   <a href="#readme">Back to the Top</a>
