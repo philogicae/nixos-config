@@ -31,7 +31,11 @@
     wget
     zip
     unzip
+    parted
+    dust
+    dysk
     brave
+    windsurf
   ];
 
   time.timeZone = "Europe/Bucharest";
